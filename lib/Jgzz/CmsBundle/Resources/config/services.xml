@@ -1,0 +1,51 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+
+    <parameters>
+        <parameter key="jgzz_cms.slugmanager.class">Jgzz\CmsBundle\SlugManager\SlugManager</parameter>
+        <parameter key="jgzz_cms.contenttreemanager.class">Jgzz\CmsBundle\ContentTree\ContentTreeManager</parameter>
+        <parameter key="jgzz_cms.slugmanager.twig.class">Jgzz\CmsBundle\Twig\jgzzcmsExtension</parameter>
+        <parameter key="jgzz_cms.slugmanager.managedbase.class">Jgzz\CmsBundle\Entity\JzcmsContent</parameter>
+        <parameter key="jgzz_cms.slugmanager.managedi18n.class">Jgzz\CmsBundle\Entity\JzcmsContentI18n</parameter>
+    </parameters>
+
+    <services>
+        <service id="jgzz.slugmanager" class="%jgzz_cms.slugmanager.class%">
+            <argument type="service" id="service_container" />
+            <call method="setManagedEntities">
+                <argument>%jgzz_cms.slugmanager.managedbase.class%</argument>
+                <argument>%jgzz_cms.slugmanager.managedi18n.class%</argument>
+            </call>
+        </service>
+        
+        <service id="jgzz.contenttreemanager" class="%jgzz_cms.contenttreemanager.class%">
+            <argument type="service" id="service_container" />
+        </service>
+
+		<!-- Extensión de twig para poder generar enlaces con url traducida, etc -->
+        <service id="jgzz.slugmanager.twig" class="%jgzz_cms.slugmanager.twig.class%">
+        	<tag name="twig.extension" />
+        	<argument type="service" id="translator" />
+            <argument type="service" id="jgzz.slugmanager" />
+            <argument type="service" id="service_container" />
+        </service>
+        
+        <!--
+        <service id="jgzz.attachpropmanager" class="Jgzz\CmsBundle\AttachPropertyManager">
+        	<call method="setContainer">
+                <argument type="service" id="service_container" />
+            </call>
+        </service>-->
+        
+
+        <service id="jgzz.form.type.imagefile" class="Jgzz\CmsBundle\Form\Type\ImageFileType">
+        	<tag name="form.type" />
+        </service>
+        
+    </services>
+
+</container>
