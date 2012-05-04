@@ -100,7 +100,7 @@ abstract class I18nAdmin extends Admin {
 	 * se añade el parámetro locale a los parámetros de la url (si no venía ya establecido).
 	 * 
 	 */
-	public function generateObjectUrl($name, $object, array $parameters = array())
+	public function generateObjectUrl($name, $object, array $parameters = array(), $absolute = false)
 	{
 	
 		if( !array_key_exists('locale', $parameters) && is_a($object, 'Translatable') )
@@ -115,7 +115,7 @@ abstract class I18nAdmin extends Admin {
 	 * Sobreescrito para generar las url de edición con parámetro locale
 	 * siempre que nos encontremos en una página localizada (páginas de edición)
 	 */	
-	public function generateUrl($name, array $parameters = array())
+	public function generateUrl($name, array $parameters = array(), $absolute = false)
     {
     
     	if ($name == 'edit' && !array_key_exists('locale', $parameters))
