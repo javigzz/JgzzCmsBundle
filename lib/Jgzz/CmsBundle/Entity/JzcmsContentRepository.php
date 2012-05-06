@@ -108,19 +108,60 @@ class JzcmsContentRepository extends TranslatableRepository
 
 		$parent = $entity -> getParent();
 		
+		$separador = "/";
+		
 		if (!isset($parent)) {
 
 			$slug_abs = $entity -> getSlug();
+			
+			$entity -> setSlugAbsoluto($slug_abs);
 
 		} else {
 			
-			// // búsqueda del contenido padre en el mismo locale que el objeto
-			// if(!($parent_loc = $this -> findParentLocale($object))){
-// 
-				// // no hay locale para el parent --> comportamiento x def?
-				// $slug_abs = $object -> getSlug();
-// 				
-			// } else {
+			if ($todos_locale){
+				
+				
+				$locale_inicio = $entity->getLocale();
+				
+				/* 
+				 * se actualizan todos los locale de la entidad: todas las traudcciones
+				 * esto es necesario por ejemplo cuando ha cambiado el padre 
+				 * del que depende un contenido: esta comprobación se debe realizar en 
+				 * otro sitio
+				 */
+				$this->findAllLocales($entity);
+				
+				$this->findAllLocales($parent);
+				
+				$translations = $entity->getTranslations();
+				
+				// recorrido de todos los locale
+				foreach ($translations as $tr){
+					
+					$locale = $tr->getLocale();
+					
+					//echo "actualizando slug absoluto de locale: ".$locale;
+					// entidad en locale
+					$entity->setCurrentTranslation($locale);
+					
+					// entidad padre en locale
+					$parent->setCurrentTranslation($locale);
+				
+					$slug_abs_locale = $parent->getSlugAbsoluto() . $separador . $entity -> getSlug();
+					
+					$entity->setSlugAbsoluto($slug_abs_locale);
+					
+					//echo " slug abs actualizado a: ".$entity->getSlugAbsoluto();
+
+				}
+				
+				// devolvemos la entidad a su locale original
+				$entity->setCurrentTranslation($locale_inicio);
+
+			} else {
+				
+				// se actualiza únicamente el locale actual de la entidad
+				
 				$locale = $entity->getLocale();
 				
 				$parent_tr = $this->getTranslationForLocale($parent, $locale);
@@ -130,10 +171,14 @@ class JzcmsContentRepository extends TranslatableRepository
 					para el idioma que está editando ($locale). Id nodo padre: ".$parent->getId, 1);
 					
 				}
-
-				$separador = "/";
 				
 				$slug_abs = $parent_tr->getSlugAbsoluto() . $separador . $entity -> getSlug();
+				
+				$entity -> setSlugAbsoluto($slug_abs);
+
+			}
+	
+				
 				//$separador = $this -> configurationPool -> getContainer() -> get('jgzz.slugmanager') -> getSlugSeparator();
 				
 				//\Doctrine\Common\Util\Debug::dump($parent_loc);
@@ -152,7 +197,7 @@ class JzcmsContentRepository extends TranslatableRepository
 
 		}
 
-		$entity -> setSlugAbsoluto($slug_abs);
+		
 	}
 
 	/**
