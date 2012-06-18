@@ -2,6 +2,7 @@
 	en caso de existir #}
 {% block imagefile_widget %}
 {% spaceless %}
+
 	{% if current_file is not null %}
 	<p>Imagen actual <a href="{{ current_file }}" target="_blank" alt="ver tamaño original">({{ current_file }})</a></p>
 	<a href="{{ current_file }}" target="_blank" alt="ver tamaño original"><img class="imagefile_curr_img" src="{{ current_file }}" style="max-width: {{max_width}}px" /></a>

@@ -10,17 +10,6 @@ namespace Jgzz\CmsBundle\Interfaces;
 interface EntityAttachPropsManagerInterface {
 	
 	/**
-	 * La entidad devuelve un objeto 
-	 * @return \Jgzz\CmsBundle\Attach\AttachPropertyManager
-	 */
-	function getAttachManager();
-	
-	/**
-	 * Añade un registro de propiedad gestionable mediante el attachManager.
-	 */
-	function addAttachProp($prop, $prop_fileprop, $propSetter, $propGetter);
-	
-	/**
 	 * Obtiene todos los registros de adjuntos de la entidad. 
 	 * AttachPropertyManager espera un array asociativo de arrays (éstos con determinados índices descriptivos)
 	 * 

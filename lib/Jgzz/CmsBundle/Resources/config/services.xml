@@ -11,6 +11,9 @@
         <parameter key="jgzz_cms.slugmanager.twig.class">Jgzz\CmsBundle\Twig\jgzzcmsExtension</parameter>
         <parameter key="jgzz_cms.slugmanager.managedbase.class">Jgzz\CmsBundle\Entity\JzcmsContent</parameter>
         <parameter key="jgzz_cms.slugmanager.managedi18n.class">Jgzz\CmsBundle\Entity\JzcmsContentI18n</parameter>
+        <parameter key="jgzz_cms.slugmanager.use_slug_absoluto">true</parameter>
+        <!-- server path to public web directory -->
+        <parameter key="jgzz_cms.attachpropmanager.webdirpath">%kernel.root_dir%/../web</parameter>
     </parameters>
 
     <services>
@@ -19,6 +22,9 @@
             <call method="setManagedEntities">
                 <argument>%jgzz_cms.slugmanager.managedbase.class%</argument>
                 <argument>%jgzz_cms.slugmanager.managedi18n.class%</argument>
+            </call>
+            <call method="setUseSlugAbsoluto">
+                <argument>%jgzz_cms.slugmanager.use_slug_absoluto%</argument>
             </call>
         </service>
         
@@ -34,12 +40,12 @@
             <argument type="service" id="service_container" />
         </service>
         
-        <!--
-        <service id="jgzz.attachpropmanager" class="Jgzz\CmsBundle\AttachPropertyManager">
-        	<call method="setContainer">
-                <argument type="service" id="service_container" />
+        
+        <service id="jgzz.attachpropmanager" class="Jgzz\CmsBundle\Attach\PropertyManager">
+        	<call method="setWebDirPath">
+                <argument>%jgzz_cms.attachpropmanager.webdirpath%</argument>
             </call>
-        </service>-->
+        </service>
         
 
         <service id="jgzz.form.type.imagefile" class="Jgzz\CmsBundle\Form\Type\ImageFileType">

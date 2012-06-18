@@ -14,6 +14,8 @@ class ImageFileType extends AbstractType
 		return array(
 			'current_file' => null,
 			'max_width' => 200,
+			'width'	=> null,
+			'height' => null,
 		);
     }
 

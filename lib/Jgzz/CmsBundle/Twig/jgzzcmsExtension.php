@@ -31,7 +31,9 @@ class jgzzcmsExtension extends \Twig_Extension {
 		'current_slug_i18n' => new \Twig_Function_Method($this, 'getCurrentSlugI18n'), 
 		'css_active_class' => new \Twig_Function_Method($this, 'getCssActiveClass'), 
 		'nivel_active_key' => new \Twig_Function_Method($this, 'getIsKeywordActive'), 
-		'content_tree_by_keyword' => new \Twig_Function_Method($this, 'getContentTreeByKeyword'), );
+		'content_tree_by_keyword' => new \Twig_Function_Method($this, 'getContentTreeByKeyword'),
+		'entity_prop_file_path' => new \Twig_Function_Method($this, 'getEntityPropFilePath'),
+		);
 	}
 
 	public function getFilters() {
@@ -142,7 +144,7 @@ class jgzzcmsExtension extends \Twig_Extension {
 	}
 
 	private function doFilterUrlsI18nWeb($match) {
-//print_r($match);
+
 		$locale = $this -> container -> get('session') -> getLocale();
 
 		$slug = $this -> slugmanager -> getSlugAbsolutoByKeyLocale($match[1], $locale);
@@ -154,6 +156,18 @@ class jgzzcmsExtension extends \Twig_Extension {
 		// servicio router para generar
 		return $this -> container -> get('router') -> generate('', array('slug' => $slug), true);
 
+	}
+
+	/**
+	 * Recupera la ruta a un archivo asociado a un campo de una entidad.
+	 * Hace uso del servicio AttachPropertyManager sobre una entidad que
+	 * debe implementar EntityAttachPropsManagerInterface
+	 */
+	public function getEntityPropFilePath($entity, $prop_name){
+			
+		return $this -> container -> get('jgzz.attachpropmanager')
+		->setEntity($entity)
+		->getWebPath($prop_name);
 	}
 
 }

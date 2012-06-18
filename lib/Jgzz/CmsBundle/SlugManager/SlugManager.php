@@ -107,6 +107,10 @@ class SlugManager {
 
 		$this -> repository_i18n = $this -> container -> get('doctrine') -> getRepository($this -> managed_entity_i18n);
 	}
+	
+	public function setUseSlugAbsoluto($use){
+		$this->use_slugs_absolutos = $use;
+	}
 
 	public function configCheks($match, $parents, $locale) {
 		$this -> check_slugentitymatch = $match;
@@ -268,7 +272,7 @@ class SlugManager {
 		if (!isset($this->current_active_entities_summary_array)){
 
 			if(!$this->use_slugs_absolutos){
-				throw new \Exception("No se puede usar si no se usan slugs absolutos", 1);
+				//throw new \Exception("No se puede usar si no se usan slugs absolutos", 1);
 			}
 			
 			$sa = array();
@@ -325,7 +329,11 @@ class SlugManager {
 
 			//var_dump($bd_arr);
 			foreach ($bd_arr as $reg) {
-				$this -> slug_cache[$reg['keyword']]['locales'][$reg['locale']] = $reg['slug_absoluto'];
+				
+				// depende de qué tipo de slug se use
+				$slug = $this->use_slugs_absolutos === true ? $reg['slug_absoluto'] : $reg['slug'];
+				
+				$this -> slug_cache[$reg['keyword']]['locales'][$reg['locale']] = $slug;
 				//$this -> slug_cache[$reg['keyword']]['locales'][$reg['locale']] = $reg['slug_absoluto'];
 				$this -> slug_cache[$reg['keyword']]['id'] = $reg['id'];
 				$this -> slug_cache[$reg['keyword']]['type'] = $reg['type'];
@@ -394,6 +402,7 @@ class SlugManager {
 	 * en la chaché de slugs absolutos para un slug absoluto determinado.
 	 */
 	public function findEntitySummaryArrayBySlugAbs($slugabsolto){
+		
 		$key_slug_cache_array = $this -> getSlugCacheArray();
 
 		$slugabsolto = trim($slugabsolto);

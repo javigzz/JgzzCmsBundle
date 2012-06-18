@@ -36,23 +36,27 @@ abstract class I18nAdmin extends Admin {
     	
     	$values = array_combine($mm->getIdentifierFieldNames($class), explode('-', $id));
 		
-		$er = $mm->getEntityManager()->getRepository($class);
-		
-		if ( $er instanceof TranslatableRepository )
-		{
-			// recuperamos entidades traducidas
-
-			// locale: pasado en request o por defecto
-			$locale = $this->getRequest()->query->get('locale', $this->default_locale);
+		try{
+			$er = $mm->getEntityManager($class)->getRepository($class);
+		} catch (\Exception $e){
 			
-			// método find específico de entidades traducibles según jgzz i18n
-			return $er->findLocale($locale, $id);
-		
-		} else {
-
-			// comportamiento default Admin
-			return parent::getObject($id);
+			// versiones antiguas de Sonata\DoctrineORMAdminBundle\Model\ModelManager
+			$er = $mm->getEntityManager()->getRepository($class);
 		}
+		
+		
+		if (! $er instanceof TranslatableRepository ){
+			throw new \Exception("El EntityRepository de clase ".$class." debe extender Jgzz\DoctrineI18n\Entity\Repository\TranslatableRepository 
+			para poder aplicar el Admin internacionalizado I18nAdmin");
+		}
+		
+		// recuperamos entidades traducidas
+
+		// locale: pasado en request o por defecto
+		$locale = $this->getRequest()->query->get('locale', $this->default_locale);
+		
+		// método find específico de entidades traducibles según jgzz i18n
+		return $er->findLocale($locale, $id);
 
     }
     
