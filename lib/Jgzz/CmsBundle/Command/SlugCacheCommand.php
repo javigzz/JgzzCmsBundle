@@ -24,7 +24,7 @@ class SlugCacheCommand extends ContainerAwareCommand {
 			
 		$sm = $this->getContainer()->get('jgzz.slugmanager');
 		
-		//$sm->use_slugs_absolutos = true;
+		$sm->use_slugs_absolutos = true;
 		
 		$sca = $sm->getSlugCacheArray();
 		
