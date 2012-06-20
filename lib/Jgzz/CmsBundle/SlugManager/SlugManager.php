@@ -469,9 +469,6 @@ class SlugManager {
 			$maybe_parent = $this -> entitychain[$this -> slugchain[$i]];
 			$maybe_child = $this -> entitychain[$this -> slugchain[$i + 1]];
 
-			echo $i . $maybe_parent -> getSlug();
-			echo $maybe_child -> getSlug();
-
 			if ($maybe_child -> getParent() != $maybe_parent) {
 
 				$slug_no_parent = $maybe_parent -> getSlug();
