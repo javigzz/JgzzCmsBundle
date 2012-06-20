@@ -115,7 +115,8 @@ class SlugManager {
 	}
 
 	/**
-	 * Computa y establece el slugchain y en caso de estar usando slugs absolutos, establece 
+	 * Computa y establece el slugchain y en caso de 
+	 * estar usando slugs absolutos, establece 
 	 * el array de slugs absolutos
 	 */
 	public function setSlug($wholeslug) {
@@ -248,7 +249,8 @@ class SlugManager {
 	}
 	
 	/**
-	 * Recupera el resumen de datos de la entidad cuyo slug se pasa o en su defecto de la entidad en foco.
+	 * Recupera el resumen de datos de la entidad cuyo slug se pasa 
+	 * o en su defecto de la entidad en foco.
 	 */
 	public function getEntitySummaryArray($slugabsolto = null){
 		return isset($slugabsolto) ? $this->findEntitySummaryArrayBySlugAbs($slugabsolto) : $this->getCurrentEntitySummaryArray();
