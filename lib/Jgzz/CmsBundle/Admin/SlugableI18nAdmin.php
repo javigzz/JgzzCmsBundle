@@ -27,13 +27,23 @@ abstract class SlugableI18nAdmin extends I18nAdmin {
 // ordenar actualizar todos los idiomas
 		$er = $this->getModelManager()->getEntityManager()->getRepository($this->getClass());
 		
-		$er->actualizaSlugAbsoluto($object);
+		// comprobar si ha cambiado el padre --> actualizar los slug de las versiones 
+		//  traducidas
+		$padre_cambia = false;
+		
+		
+		$er->actualizaSlugAbsoluto($object, $padre_cambia);
 	}
 	
 	private function transmiteSlugAHijas($object){
 		$er = $this->getModelManager()->getEntityManager()->getRepository($this->getClass());
 		
-		$er->transmiteSlugAHijas($object);
+		// comprobar si ha cambiado el padre --> actualizar los slug de todas las versiones 
+		//  traducidas
+		$padre_cambia = false;
+		
+		
+		$er->transmiteSlugAHijas($object, array(), $padre_cambia);
 	}
 
 
