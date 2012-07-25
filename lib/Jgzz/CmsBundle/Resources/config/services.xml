@@ -52,6 +52,11 @@
         	<tag name="form.type" />
         </service>
         
+        <service id="jgzz.slugupdatereventsuscriber" class="Jgzz\CmsBundle\Listener\SlugUpdaterEventSubscriber">
+		    <tag name="doctrine.event_listener" event="preUpdate" />
+		    <tag name="doctrine.event_listener" event="prePersist" />
+		</service>
+
     </services>
 
 </container>

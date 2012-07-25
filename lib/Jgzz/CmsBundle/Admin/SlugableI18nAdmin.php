@@ -16,15 +16,13 @@ abstract class SlugableI18nAdmin extends I18nAdmin {
 	protected $usa_slugs_absolutos = true;
 
 	private $separador_slugs;
-
+	
+	
 	/**
 	 * Actualización del slug absoluto
-	 * TODO: comprobar si ha cambiado el campo slug propio o si ha cambiado el padre 
-	 * en este último caso se deberán actualizar todos los idiomas de la entidad
+	 * comentado xq ahora se ocupa el event subscriber slugupdatereventsubscriber
 	 */
-	private function actualizaSlugAbsoluto($object){
-		// TODO: implementar evento para comprobar si se ha modificado el padre, y así 
-// ordenar actualizar todos los idiomas
+	/*private function actualizaSlugAbsoluto($object){
 		$er = $this->getModelManager()->getEntityManager()->getRepository($this->getClass());
 		
 		// comprobar si ha cambiado el padre --> actualizar los slug de las versiones 
@@ -33,47 +31,62 @@ abstract class SlugableI18nAdmin extends I18nAdmin {
 		
 		
 		$er->actualizaSlugAbsoluto($object, $padre_cambia);
-	}
+	}*/
 	
+	/*
 	private function transmiteSlugAHijas($object){
+		
+	}
+	 */
+	
+
+	/*
+	 * comentado xq ahora se ocupa el event subscriber slugupdatereventsubscriber
+	public function preUpdate($object) {
+
+		parent::preUpdate($object);
+		
+		// se implementa listern por via subscriber
+		//XXX $this->actualizaSlugAbsoluto($object);
+		
+	}
+	*/
+
+	/**
+	 * Transmisión del slug hacia abajo
+	 */
+	 
+	public function postUpdate($object) {
+		parent::postUpdate($object);
+
 		$er = $this->getModelManager()->getEntityManager()->getRepository($this->getClass());
 		
 		// comprobar si ha cambiado el padre --> actualizar los slug de todas las versiones 
 		//  traducidas
 		$padre_cambia = false;
 		
-		
-		$er->transmiteSlugAHijas($object, array(), $padre_cambia);
-	}
-
-
-	public function preUpdate($object) {
-
-		parent::preUpdate($object);
-
-		$this->actualizaSlugAbsoluto($object);
-		
-	}
-
-	/**
-	 * Transmisión del slug hacia abajo
-	 */
-	public function postUpdate($object) {
-		parent::postUpdate($object);
-
-		$this->transmiteSlugAHijas($object);
+		$er->transmiteSlugAHijas($object, array());
 		
 		$this->getModelManager()->getEntityManager()->flush();
 		
 		//$n = $this -> transmiteSlugAHijas($object);
 	}
+	
+	  
 
+	/*
+	 * comentado xq ahora se ocupa el event subscriber slugupdatereventsubscriber
 	public function prePersist($object) {
 		parent::prePersist($object);
 
-		$this->actualizaSlugAbsoluto($object);
+		//XXX $this->actualizaSlugAbsoluto($object);
 	}
+	 
+	 */
 
+	/*
+	 * COMENTADO: NO TIENE SENTIDO, UNA ENTIDAD NUEVA NO PUEDE TENER DESCENDIENTES
+	 * EN EL MISMO MOMENTO DE CREARLA ... SALVO QUE SE CREEN EN EL MISMO ACTO?
 	public function postPersist($object) {
 		parent::postPersist($object);
 		
@@ -82,6 +95,8 @@ abstract class SlugableI18nAdmin extends I18nAdmin {
 		$this->getModelManager()->getEntityManager()->flush();
 		//$n = $this -> transmiteSlugAHijas($object);
 	}
+	 *
+	 */
 
 	protected function getSeparadorSlugs() {
 		if (!isset($this -> separador_slugs)) {
