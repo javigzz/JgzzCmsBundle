@@ -51,6 +51,7 @@ class SlugUpdaterEventSubscriber {
 			$padre_cambia = $eventArgs->hasChangedField('parent');
 			
 		} else {
+			// XXX ojo, esto  no es necesario al haber homogeneizado object más arriba
 			
 			// en caso de que se esté tratando un objeto Translation,
 			// se entiende que el 'padre' no cambia a los efectos del 
@@ -68,20 +69,34 @@ class SlugUpdaterEventSubscriber {
     }
 	
 	/**
-	 * En caso de entidad nueva
+	 * En caso de entidad nueva. Hay que manejar el caso en que 
+	 * se reciba la entidad Translatable como en el que se reciba 
+	 * la Tranlation (como en método preUpdate)
 	 */
 	public function prePersist(LifecycleEventArgs $args) {
 
 		$entity = $args->getEntity();
 		
-		$em = $eventArgs->getEntityManager()->getRepository(get_class($entity));
+		//$em = $args->getEntityManager()->getRepository(get_class($entity));
+		
+		/*
+		 * el objeto sobre el que se realizan las acciones debe ser 
+		 * el objeto principal, no la trauducción
+		 */
+		$object = is_a($entity, 'Jgzz\DoctrineI18n\Entity\Translation') ?
+			$entity -> getParent() :
+			$entity;
+		
+		$em = $args->getEntityManager()->getRepository(get_class($object));
+		
+		
 		
 		/*
 		 * Si el repositorio tiene el método actualizaSlugAbs...
 		 */
 		if ( is_a($em, 'Jgzz\CmsBundle\Entity\JzcmsContentRepository')) {
 			
-        	$em	-> actualizaSlugAbsoluto($entity, false);
+        	$em	-> actualizaSlugAbsoluto($object, false);
 			
         }
 	}
