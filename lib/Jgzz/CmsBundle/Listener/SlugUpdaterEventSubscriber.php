@@ -89,21 +89,26 @@ class SlugUpdaterEventSubscriber {
 		
 		$em = $args->getEntityManager()->getRepository(get_class($object));
 		
-		//TODO: comprobar si está vacío el slug, y en tal caso asignar uno por defecto
-		$slug = $object->getSlug();
-		if(empty($slug)){
-			
-			$slug_sintetico = $object->getKeyword()."_".strtoupper($object->getLocale());
-			
-			$slug_sintetico .= "_".substr(md5($slug_sintetico), 0, 6);
-			
-			$object -> setSlug($slug_sintetico);
-		}
 		
 		/*
 		 * Si el repositorio tiene el método actualizaSlugAbs...
 		 */
 		if ( is_a($em, 'Jgzz\CmsBundle\Entity\JzcmsContentRepository')) {
+			
+			/*
+			 * comprobamos slug existe o se generera uno por defecto
+			 */
+			$slug = $object->getSlug();
+		
+			if(empty($slug)){
+				
+				$slug_sintetico = $object->getKeyword()."_".strtoupper($object->getLocale());
+				
+				$slug_sintetico .= "_".substr(md5($slug_sintetico), 0, 6);
+				
+				$object -> setSlug($slug_sintetico);
+			}
+			
 			
         	$em	-> actualizaSlugAbsoluto($object, false);
 			
