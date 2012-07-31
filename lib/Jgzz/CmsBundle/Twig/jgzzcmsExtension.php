@@ -33,6 +33,7 @@ class jgzzcmsExtension extends \Twig_Extension {
 		'nivel_active_key' => new \Twig_Function_Method($this, 'getIsKeywordActive'), 
 		'content_tree_by_keyword' => new \Twig_Function_Method($this, 'getContentTreeByKeyword'),
 		'entity_prop_file_path' => new \Twig_Function_Method($this, 'getEntityPropFilePath'),
+		'jgzzcms_content_by_keyword' => new \Twig_Function_Method($this, 'getContentByKeyword'),
 		);
 	}
 
@@ -168,6 +169,31 @@ class jgzzcmsExtension extends \Twig_Extension {
 		return $this -> container -> get('jgzz.attachpropmanager')
 		->setEntity($entity)
 		->getWebPath($prop_name);
+	}
+	
+	/**
+	 * Recupera el campo de contenido asociado a un keyword, en el locale actual
+	 */
+	public function getContentByKeyword($keyword, $class){
+				
+			//'Jgzz\CmsBundle\Entity\JzcmsContent'
+		
+		$locale = $this -> container -> get('session') -> getLocale();
+		
+		$er = $this-> container -> get('doctrine') -> getEntityManager()
+		 
+		-> getRepository($class);
+		
+		$cont = $er -> findByKeywordLocale($keyword, $locale);
+		
+		
+		if (!isset($cont)){
+			//return "";
+			return "<!-- not found '".$keyword."' -->";
+		}
+		
+		return $cont->getText();
+		
 	}
 
 }

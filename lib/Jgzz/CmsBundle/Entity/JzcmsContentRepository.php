@@ -24,6 +24,31 @@ class JzcmsContentRepository extends TranslatableRepository
 	 */
 	protected $base_content_entity_class = 'JgzzCmsBundle:JzcmsContent';
 	
+	
+	/**
+	 * Encuentra una entidad por su keyword y su locale
+	 */
+	public function findByKeywordLocale($key, $locale){
+		
+		$qb = $this->createQueryBuilderLocale($locale);
+		
+		// obra
+		$qb -> andWhere($qb->expr()->eq('c.keyword', ':key'))
+		
+		->setParameter('key', $key);
+		
+		$res = $qb -> getQuery() -> getSingleResult();
+		
+		//\Doctrine\Common\Util\Debug::dump($res);
+		//exit;
+		
+		$res->setCurrentTranslation($locale);
+		
+		
+		return $res;
+		
+	}
+	
 	/**
 	 * Encuentra el objeto padre en el locale actual
 	 */
