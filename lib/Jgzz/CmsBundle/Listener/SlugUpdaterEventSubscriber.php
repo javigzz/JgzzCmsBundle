@@ -40,7 +40,15 @@ class SlugUpdaterEventSubscriber {
 		
 		$em = $eventArgs->getEntityManager()->getRepository(get_class($object));
 		
-		
+		/*
+		 * comprobamos que existe el método actualizaSlugAbsoluto, que no es 
+		 * específico de Translatable sindo de algunas 'subclases'...
+		 * 
+		 */
+		if(!(method_exists($object, 'actualizaSlugAbsoluto')))
+		{
+			return;
+		}
 		
 		/*
 		 * ojo, parent tiene diferente significado para un objeto JzcmsContent
@@ -88,6 +96,16 @@ class SlugUpdaterEventSubscriber {
 			$entity;
 		
 		$em = $args->getEntityManager()->getRepository(get_class($object));
+		
+		/*
+		 * comprobamos que existe el método actualizaSlugAbsoluto, que no es 
+		 * específico de Translatable sindo de algunas 'subclases'...
+		 * 
+		 */
+		if(!(method_exists($object, 'actualizaSlugAbsoluto')))
+		{
+			return;
+		}
 		
 		
 		/*
