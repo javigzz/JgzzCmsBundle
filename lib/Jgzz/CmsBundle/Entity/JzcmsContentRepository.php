@@ -362,29 +362,6 @@ class JzcmsContentRepository extends TranslatableRepository
 		
 	}
 	
-	/**
-	 * Recupera entidades comparando su campo keyword con el patrón que se pasa
-	 * mediante la función LIKE
-	 */
-	// public function findByKeywordLike($patron){
-// 		
-		// $qb = $this->getEntityManager()->createQueryBuilder();
-// 		
-		// $qb->add('select', 'c')
-		   // ->add('from', sprintf('%s c',$this->base_content_entity_class))
-		   // ->add('where', 
-		   	// $qb->expr()->like('c.keyword', '?1')
-			// )
-		   // ->add('orderBy', 'c.keyword ASC')
-		   // ->setParameter(1, $patron);
-		   // ;
-// 		   
-		   // echo $qb->getDql();
-// 		   
-		  // $query = $qb->getQuery();
-// 		  
-		  // return $query->getResult();
-	// }
-	
+		
 	
 }

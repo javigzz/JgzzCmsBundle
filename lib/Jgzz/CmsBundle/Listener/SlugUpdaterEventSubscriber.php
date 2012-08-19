@@ -38,14 +38,14 @@ class SlugUpdaterEventSubscriber {
 			$entity -> getParent() :
 			$entity;
 		
-		$em = $eventArgs->getEntityManager()->getRepository(get_class($object));
+		$er = $eventArgs->getEntityManager()->getRepository(get_class($object));
 		
 		/*
-		 * comprobamos que existe el método actualizaSlugAbsoluto, que no es 
-		 * específico de Translatable sindo de algunas 'subclases'...
+		 * comprobamos que existe el método actualizaSlugAbsoluto en el repositorio, 
+		 * que no es específico de Translatable sindo de algunas 'subclases'...
 		 * 
 		 */
-		if(!(method_exists($object, 'actualizaSlugAbsoluto')))
+		if(!(method_exists($er, 'actualizaSlugAbsoluto')))
 		{
 			return;
 		}
@@ -54,7 +54,7 @@ class SlugUpdaterEventSubscriber {
 		 * ojo, parent tiene diferente significado para un objeto JzcmsContent
 		 * que para un objeto Translation:
 		 */
-		if ( is_a($em, 'Jgzz\CmsBundle\Entity\JzcmsContentRepository')) {
+		if ( is_a($er, 'Jgzz\CmsBundle\Entity\JzcmsContentRepository')) {
 			// comprobamos si el padre ha cambiado
 			$padre_cambia = $eventArgs->hasChangedField('parent');
 			
@@ -72,7 +72,8 @@ class SlugUpdaterEventSubscriber {
 		}
 		//var_dump($padre_cambia);
 		
-		$em	-> actualizaSlugAbsoluto($object, $padre_cambia);
+		
+		$er	-> actualizaSlugAbsoluto($object, $padre_cambia);
 
     }
 	
@@ -85,7 +86,7 @@ class SlugUpdaterEventSubscriber {
 
 		$entity = $args->getEntity();
 		
-		//$em = $args->getEntityManager()->getRepository(get_class($entity));
+		//$er = $args->getEntityManager()->getRepository(get_class($entity));
 		
 		/*
 		 * el objeto sobre el que se realizan las acciones debe ser 
@@ -95,14 +96,13 @@ class SlugUpdaterEventSubscriber {
 			$entity -> getParent() :
 			$entity;
 		
-		$em = $args->getEntityManager()->getRepository(get_class($object));
+		$er = $args->getEntityManager()->getRepository(get_class($object));
 		
 		/*
-		 * comprobamos que existe el método actualizaSlugAbsoluto, que no es 
-		 * específico de Translatable sindo de algunas 'subclases'...
-		 * 
+		 * comprobamos que existe el método actualizaSlugAbsoluto en el repositorio, 
+		 * que no es específico de Translatable sindo de algunas 'subclases'...
 		 */
-		if(!(method_exists($object, 'actualizaSlugAbsoluto')))
+		if(!(method_exists($er, 'actualizaSlugAbsoluto')))
 		{
 			return;
 		}
@@ -111,7 +111,7 @@ class SlugUpdaterEventSubscriber {
 		/*
 		 * Si el repositorio tiene el método actualizaSlugAbs...
 		 */
-		if ( is_a($em, 'Jgzz\CmsBundle\Entity\JzcmsContentRepository')) {
+		if ( is_a($er, 'Jgzz\CmsBundle\Entity\JzcmsContentRepository')) {
 			
 			/*
 			 * comprobamos slug existe o se generera uno por defecto
@@ -128,7 +128,7 @@ class SlugUpdaterEventSubscriber {
 			}
 			
 			
-        	$em	-> actualizaSlugAbsoluto($object, false);
+        	$er	-> actualizaSlugAbsoluto($object, false);
 			
         }
 	}
@@ -141,16 +141,16 @@ class SlugUpdaterEventSubscriber {
 		
 		$entity = $args->getEntity();
 		
-		$em = $eventArgs->getEntityManager()->getRepository(get_class($entity));
+		$er = $eventArgs->getEntityManager()->getRepository(get_class($entity));
 		
-		if ( is_a($em, 'Jgzz\CmsBundle\Entity\JzcmsContentRepository')) {
+		if ( is_a($er, 'Jgzz\CmsBundle\Entity\JzcmsContentRepository')) {
 			
 			// comprobamos si el padre ha cambiado
 			//$padre_cambia = $eventArgs->hasChangedField('parent');
 			
-        	$em->transmiteSlugAHijas($entity, array());
+        	$er->transmiteSlugAHijas($entity, array());
 			
-			$em->flush();
+			$er->flush();
 			
         }
 		
