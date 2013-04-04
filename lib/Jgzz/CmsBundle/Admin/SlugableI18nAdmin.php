@@ -17,40 +17,6 @@ abstract class SlugableI18nAdmin extends I18nAdmin {
 
 	private $separador_slugs;
 	
-	
-	/**
-	 * Actualización del slug absoluto
-	 * comentado xq ahora se ocupa el event subscriber slugupdatereventsubscriber
-	 */
-	/*private function actualizaSlugAbsoluto($object){
-		$er = $this->getModelManager()->getEntityManager()->getRepository($this->getClass());
-		
-		// comprobar si ha cambiado el padre --> actualizar los slug de las versiones 
-		//  traducidas
-		$padre_cambia = false;
-		
-		
-		$er->actualizaSlugAbsoluto($object, $padre_cambia);
-	}*/
-	
-	/*
-	private function transmiteSlugAHijas($object){
-		
-	}
-	 */
-	
-
-	/*
-	 * comentado xq ahora se ocupa el event subscriber slugupdatereventsubscriber
-	public function preUpdate($object) {
-
-		parent::preUpdate($object);
-		
-		// se implementa listern por via subscriber
-		//XXX $this->actualizaSlugAbsoluto($object);
-		
-	}
-	*/
 
 	/**
 	 * Transmisión del slug hacia abajo
@@ -59,7 +25,9 @@ abstract class SlugableI18nAdmin extends I18nAdmin {
 	public function postUpdate($object) {
 		parent::postUpdate($object);
 
-		$er = $this->getModelManager()->getEntityManager()->getRepository($this->getClass());
+		$em = $this->getModelManager()->getEntityManager($this->getClass());
+
+		$er = $em->getRepository($this->getClass());
 		
 		// comprobar si ha cambiado el padre --> actualizar los slug de todas las versiones 
 		//  traducidas
@@ -67,36 +35,11 @@ abstract class SlugableI18nAdmin extends I18nAdmin {
 		
 		$er->transmiteSlugAHijas($object, array());
 		
-		$this->getModelManager()->getEntityManager()->flush();
+		$em->flush();
 		
 		//$n = $this -> transmiteSlugAHijas($object);
 	}
 	
-	  
-
-	/*
-	 * comentado xq ahora se ocupa el event subscriber slugupdatereventsubscriber
-	public function prePersist($object) {
-		parent::prePersist($object);
-
-		//XXX $this->actualizaSlugAbsoluto($object);
-	}
-	 
-	 */
-
-	/*
-	 * COMENTADO: NO TIENE SENTIDO, UNA ENTIDAD NUEVA NO PUEDE TENER DESCENDIENTES
-	 * EN EL MISMO MOMENTO DE CREARLA ... SALVO QUE SE CREEN EN EL MISMO ACTO?
-	public function postPersist($object) {
-		parent::postPersist($object);
-		
-		$this->transmiteSlugAHijas($object);
-		
-		$this->getModelManager()->getEntityManager()->flush();
-		//$n = $this -> transmiteSlugAHijas($object);
-	}
-	 *
-	 */
 
 	protected function getSeparadorSlugs() {
 		if (!isset($this -> separador_slugs)) {

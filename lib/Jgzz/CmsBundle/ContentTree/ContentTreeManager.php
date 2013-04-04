@@ -21,7 +21,7 @@ class ContentTreeManager {
 	 * TODO: implementar en caché
 	 */
 	public function getArbolContenido($tipos, $root_parent, $include_root, $n_niveles_max = null) {
-		$locale = $this -> container -> get('session') -> getLocale();
+		$locale = $this -> container -> get('request') -> getLocale();
 
 		$in_str = "'" . join("','", $tipos) . "'";
 		
@@ -179,7 +179,7 @@ class ContentTreeManager {
 	
 //primera aproximción al problema de recuperar arbol de contenidos. optado por getArbolContenido
 	// public function getGruposContenido($tipopadre, $tipohijo) {
-		// $locale = $this -> container -> get('session') -> getLocale();
+		// $locale = $this -> container -> get('request') -> getLocale();
 // 
 		// $stmt = $this -> container -> get('doctrine') -> getEntityManager() -> getConnection() -> prepare(sprintf("
       // SELECT

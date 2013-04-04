@@ -26,14 +26,14 @@ class ImageFileType extends AbstractType
   //   }
   //   
   	public function setDefaultOptions(OptionsResolverInterface $resolver)
-{
-    $resolver->setDefaults(array(
-        'current_file' => null,
-		'height' => null,
-		'max_width' => 200,
-		'width'	=> null,
-    ));
-}
+	{
+	    $resolver->setDefaults(array(
+	        'current_file' => null,
+			'height' => null,
+			'max_width' => 200,
+			'width'	=> null,
+	    ));
+	}
 
     public function getParent()
     {
@@ -42,7 +42,7 @@ class ImageFileType extends AbstractType
 
     public function getName()
     {
-        return 'imagefile';
+        return 'jgzz_form_type_imagefile';
     }
 	
 	/*
@@ -62,10 +62,9 @@ class ImageFileType extends AbstractType
 	public function buildView(FormView $view, FormInterface $form, array $options){
 		
 		//$options = $this->getDefaultOptions(array());
-		
-		$view
-            ->set('current_file', "/".$form->getAttribute('current_file'))
-			->set('max_width', $form->getAttribute('max_width'))
+
+		$view->vars['current_file'] = "/".$form->getAttribute('current_file');
+		$view->vars['max_width'] = $form->getAttribute('max_width');
             
         ;
 	}

@@ -48,7 +48,7 @@
         </service>
         
 
-        <service id="jgzz.form.type.imagefile" class="Jgzz\CmsBundle\Form\Type\ImageFileType">
+        <service id="jgzz_form_type_imagefile" class="Jgzz\CmsBundle\Form\Type\ImageFileType">
         	<tag name="form.type" />
         </service>
         

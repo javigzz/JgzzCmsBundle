@@ -237,7 +237,7 @@ class SlugManager {
 		}
 
 		// actualizamos locale de sesión en base a locale de entidad
-		$this -> container -> get('session') -> setLocale($this->current_entity -> getLocale());
+		$this -> container -> get('request') -> setLocale($this->current_entity -> getLocale());
 
 		return $this->current_entity;
 
@@ -356,7 +356,7 @@ class SlugManager {
 		
 		$key = trim($key);
 		
-		$locale = isset($locale) ? $locale : $this -> container -> get('session') -> getLocale();
+		$locale = isset($locale) ? $locale : $this -> container -> get('request') -> getLocale();
 
 		$key_slug_cache_array = $this -> getSlugCacheArray();
 
