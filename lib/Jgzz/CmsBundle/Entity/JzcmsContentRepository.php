@@ -188,38 +188,26 @@ class JzcmsContentRepository extends TranslatableRepository
 				// se actualiza únicamente el locale actual de la entidad
 				
 				$locale = $entity->getLocale();
+
+				// TODO: esta condición se ha introducido para solventar un bug indirecto provocado al interactuar
+				// con otro bundle. no convence. toda entidad en este punto debería tener un 'locale'
+				if(!$locale){
+					return;
+				}
 				
 				$parent_tr = $this->getTranslationForLocale($parent, $locale);
 				
 				if (!isset($parent_tr)){
-					throw new \Exception("El nodo de contenido al que pertence la entidad no tiene traducción 
-					para el idioma que está editando ($locale). Id nodo padre: ".$parent->getId, 1);
+					throw new \Exception(sprintf("El nodo de contenido al que pertence la entidad (id: %s, clase: %s) no tiene traducción 
+					para el idioma que está editando (%s). Id nodo padre: %s", $entity->getId(), get_class($entity), $locale, $parent->getId()));
 					
 				}
 				
 				$slug_abs = $parent_tr->getSlugAbsoluto() . $separador . $entity -> getSlug();
-				
+
 				$entity -> setSlugAbsoluto($slug_abs);
 
 			}
-	
-				
-				//$separador = $this -> configurationPool -> getContainer() -> get('jgzz.slugmanager') -> getSlugSeparator();
-				
-				//\Doctrine\Common\Util\Debug::dump($parent_loc);
-				
-				// $parent_trans_collection = $this->findAllLocales($entity)->getTranslations();
-// 				
-				// foreach($parent_trans_collection as $parent_trad){
-// 					
-				// }
-				// echo count($parent_trans_collection);
-				// \Doctrine\Common\Util\Debug::dump($parent_trans_collection);
-				// exit;
-				// $slug_abs = $parent_loc -> getSlugAbsoluto() . $separador . $entity -> getSlug();
-				
-			//}
-
 		}
 
 		

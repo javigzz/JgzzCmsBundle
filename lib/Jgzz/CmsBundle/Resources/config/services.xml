@@ -35,27 +35,37 @@
 		<!-- Extensión de twig para poder generar enlaces con url traducida, etc -->
         <service id="jgzz.slugmanager.twig" class="%jgzz_cms.slugmanager.twig.class%">
         	<tag name="twig.extension" />
-        	<argument type="service" id="translator" />
+            <argument type="service" id="translator" />
             <argument type="service" id="jgzz.slugmanager" />
             <argument type="service" id="service_container" />
         </service>
         
         
         <service id="jgzz.attachpropmanager" class="Jgzz\CmsBundle\Attach\PropertyManager">
-        	<call method="setWebDirPath">
+            <call method="setWebDirPath">
                 <argument>%jgzz_cms.attachpropmanager.webdirpath%</argument>
             </call>
         </service>
         
 
         <service id="jgzz_form_type_imagefile" class="Jgzz\CmsBundle\Form\Type\ImageFileType">
-        	<tag name="form.type" />
+            <tag name="form.type" />
         </service>
         
         <service id="jgzz.slugupdatereventsuscriber" class="Jgzz\CmsBundle\Listener\SlugUpdaterEventSubscriber">
-		    <tag name="doctrine.event_listener" event="preUpdate" />
-		    <tag name="doctrine.event_listener" event="prePersist" />
+            <tag name="doctrine.event_listener" event="preUpdate" />
+            <tag name="doctrine.event_listener" event="prePersist" />
+        </service>
+
+        <!-- ver https://github.com/symfony/symfony/issues/5486 -->
+        <service id="jgzz.translatablesuscriber" class="Jgzz\CmsBundle\Listener\TranslatableEventSuscriber">
+            <tag name="doctrine.event_listener" event="postLoad" />
 		</service>
+        <service id="jgzz.cmsbundle.listener.kernelrequest" class="Jgzz\CmsBundle\Listener\KernelRequestListener">
+            <tag name="kernel.event_listener" event="kernel.request" method="onKernelRequest" />
+            <argument type="service" id="jgzz.translatablesuscriber" />
+        </service>
+
 
     </services>
 

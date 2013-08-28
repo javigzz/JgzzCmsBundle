@@ -33,6 +33,7 @@ class SlugUpdaterEventSubscriber {
 		/*
 		 * el objeto sobre el que se realizan las acciones debe ser 
 		 * el objeto principal, no la trauducción
+		 * TODO: esto sobra! si no es Translatable, return!
 		 */
 		$object = is_a($entity, 'Jgzz\DoctrineI18n\Entity\Translation') ?
 			$entity -> getParent() :
