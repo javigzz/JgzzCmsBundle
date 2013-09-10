@@ -100,6 +100,13 @@ abstract class JzcmsContent extends Translatable
         // constructor is never called by Doctrine
         $this->created_at = $this->updated_at = new \DateTime("now");
     }
+
+
+	public function getTranslations()
+	{
+		return $this->jgzz_translations;
+	}
+
  
     /**
      * Set type

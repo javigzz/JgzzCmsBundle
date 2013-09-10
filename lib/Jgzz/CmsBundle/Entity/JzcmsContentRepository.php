@@ -25,6 +25,27 @@ class JzcmsContentRepository extends TranslatableRepository
 	protected $base_content_entity_class = 'JgzzCmsBundle:JzcmsContent';
 	
 	
+	public function findOneBySlugAbsoluto($slug_absoluto)
+	{
+		$qb = $this -> createQueryBuilderToTrans();
+
+		$qb	-> add('where', $qb->expr()->eq('t.slug_absoluto', ':slug_absluto'))
+		
+		->setParameter('slug_absluto', $slug_absoluto);
+
+		$content = $qb->getQuery() -> getSingleResult();
+
+		$trans = $content->getTranslations();
+
+		foreach ($trans as $translation) {
+			if ($slug_absoluto == $translation->getSlugAbsoluto()){
+				$content->setCurrentTranslation($translation->getLocale());
+			}
+		}
+
+		return $content;
+	}
+
 	/**
 	 * Encuentra una entidad por su keyword y su locale
 	 */
@@ -43,7 +64,6 @@ class JzcmsContentRepository extends TranslatableRepository
 		//exit;
 		
 		$res->setCurrentTranslation($locale);
-		
 		
 		return $res;
 		
