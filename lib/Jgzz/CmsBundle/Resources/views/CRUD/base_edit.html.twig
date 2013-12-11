@@ -1,10 +1,14 @@
 {% extends 'SonataAdminBundle:CRUD:base_edit.html.twig' %}
 
+{% block actions %}
+	{{ parent() }}
+{# Edit in locale buttons #}
+<table>
+<tr>{% include 'JgzzCmsBundle:CRUD:botones_mlang_edit.html.twig' with { 'admin': admin } %}</tr>
+</table>
+{% endblock %}
 
 {% block footer %}
 	{{ parent() }}
 	{{ tinymce_init() }}
 {% endblock %}
-
-
-

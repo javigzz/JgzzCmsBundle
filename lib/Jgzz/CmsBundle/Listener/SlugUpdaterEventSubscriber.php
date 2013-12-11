@@ -114,18 +114,17 @@ class SlugUpdaterEventSubscriber {
 		 */
 		if ( is_a($er, 'Jgzz\CmsBundle\Entity\JzcmsContentRepository')) {
 			
-			/*
-			 * comprobamos slug existe o se generera uno por defecto
-			 */
 			$slug = $object->getSlug();
 		
 			if(empty($slug)){
+
+				throw new \Exception("Se esperaba que la entidad tuviera un slug");
 				
-				$slug_sintetico = $object->getKeyword()."_".strtoupper($object->getLocale());
+				// $slug_sintetico = $object->getKeyword()."_".strtoupper($object->getLocale());
 				
-				$slug_sintetico .= "_".substr(md5($slug_sintetico), 0, 6);
+				// $slug_sintetico .= "_".substr(md5($slug_sintetico), 0, 6);
 				
-				$object -> setSlug($slug_sintetico);
+				// $object -> setSlug($slug_sintetico);
 			}
 			
 			

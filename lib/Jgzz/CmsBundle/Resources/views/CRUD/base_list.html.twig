@@ -1,31 +1,19 @@
 {% extends 'SonataAdminBundle:CRUD:base_list.html.twig' %}
 
-                {% block table_body %}
-                    <tbody>
-                        {% for object in admin.datagrid.results %}
-                            <tr>
-                            	
-                            {% for field_description in admin.list.elements %}
-                               		{{ object|render_list_element(field_description) }}
-                            {% endfor %}
-                                
-                                {# enlaces de edición según locale del contenido #}
-                                
-                                {% if admin.locales is defined %}
-                                {% for locale, idioma in admin.locales %}
-                                <td>
-                                {% if admin.hasroute('edit') and admin.isGranted('EDIT') %}
-						            <a class="locale_edit locale_{{ locale }}" href="{{ admin.generateObjectUrl('edit', object, { 'locale': locale }) }}">
-							        {% elseif admin.hasroute('show') %}
-							        <a  class="locale_show locale_{{ locale }}" href="{{ admin.generateObjectUrl('show', object, { 'locale': locale }) }}">
-							        {% endif %}
-							            <img src="{{ asset('bundles/jgzzcms/images/locale/' ~ locale ~ '.gif') }}" alt="{{ idioma }}" />
-							        </a>
-                                </td>
-                                {% endfor %} {# for locales #}
-                                {% endif %}
-                            </tr>
-                        {% endfor %} {# for objetos resultado #}
-                    </tbody>
-                {% endblock %}
+{% block table_body %}
+<tbody>
+    {% for object in admin.datagrid.results %}
+    <tr>
+        {% for field_description in admin.list.elements %}
+        {{ object|render_list_element(field_description) }}
+        {% endfor %}
+
+        <td>
+        {# enlaces de edición según locale del contenido #}
+        {% include 'JgzzCmsBundle:CRUD:botones_mlang_edit.html.twig' with { 'admin': admin } %}
+        </td>
+    </tr>
+    {% endfor %} {# for objetos resultado #}
+</tbody>
+{% endblock %}
 
