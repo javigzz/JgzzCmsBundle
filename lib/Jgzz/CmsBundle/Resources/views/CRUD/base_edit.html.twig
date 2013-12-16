@@ -3,9 +3,9 @@
 {% block actions %}
 	{{ parent() }}
 {# Edit in locale buttons #}
-<table>
-<tr>{% include 'JgzzCmsBundle:CRUD:botones_mlang_edit.html.twig' with { 'admin': admin } %}</tr>
-</table>
+{% if admin.getSubject() and not admin.getSubject().id is empty %}
+{% include 'JgzzCmsBundle:CRUD:botones_mlang_edit.html.twig' with { 'admin': admin } %}
+{% endif %}
 {% endblock %}
 
 {% block footer %}
