@@ -4,6 +4,7 @@ namespace Jgzz\CmsBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
 use Jgzz\DoctrineI18n\Entity\Repository\TranslatableRepository as TranslatableRepository;
+use Jgzz\CmsBundle\Exception\SlugException;
 
 /**
  * JzcmsContentRepository
@@ -17,6 +18,8 @@ class JzcmsContentRepository extends TranslatableRepository
 	protected $tabla = 'jzcmscontent';
 	
 	protected $tabla_i18n = 'jzcmscontenti18n';
+
+	private $separador = '/';
 	
 	/*
 	 * nombre de la clase base de contenidos. Clase que guarda 
@@ -60,9 +63,6 @@ class JzcmsContentRepository extends TranslatableRepository
 		
 		$res = $qb -> getQuery() -> getSingleResult();
 		
-		//\Doctrine\Common\Util\Debug::dump($res);
-		//exit;
-		
 		$res->setCurrentTranslation($locale);
 		
 		return $res;
@@ -93,11 +93,6 @@ class JzcmsContentRepository extends TranslatableRepository
 	}
 	
 	/**
-	 * 
-	 */
-
-
-	/**
 	 * Objetos Content hijos con el mismo locale que el objeto actual
 	 */
 	public function findChildren($parent, $locale = null){
@@ -105,8 +100,6 @@ class JzcmsContentRepository extends TranslatableRepository
 		$entity_class_name = $this->getClassMetadata()->name;
 		
 		$entity_class_name = $this->base_content_entity_class;
-		
-		
 		
 		if(!($parent instanceof $entity_class_name)){
 			//throw new \Exception("El objeto no es instancia de $entity_class_name", 1);
@@ -120,23 +113,15 @@ class JzcmsContentRepository extends TranslatableRepository
 		->createQuery("SELECT c, t FROM $entity_class_name c LEFT OUTER JOIN c.jgzz_translations t WHERE t.locale = '$locale' AND c.parent = $parent_id")
 		->getResult();
 		
-		//echo "  objetos encontrados ".count($obj)." con parent_content_id ".$parent->getId()."\n";
-		
 		// recorrido de objetos contenido dependientes
 		foreach ($obj as $o){
-			//echo "    id: ".$o->getId();
-			//\Doctrine\Common\Util\Debug::dump($o);
-			//\Doctrine\Common\Util\Debug::dump($o->getTranslations());
-			//$tr = $o->getTranslations();
 			$tr = $this->getLocaleTranslationOrFind($locale, $o);
-			//\Doctrine\Common\Util\Debug::dump($tr);
+
 			if(isset($tr)){
 				$o->setCurrentTranslation($locale);
 			} else {
 				throw new \Exception("No hay locale $locale en ".$o->getId());
 			}
-			
-			//\Doctrine\Common\Util\Debug::dump($o->getCurrentTranslation());
 		}
 		return $obj;
 	}
@@ -153,84 +138,94 @@ class JzcmsContentRepository extends TranslatableRepository
 
 		$parent = $entity -> getParent();
 		
-		$separador = "/";
-		
 		if (!isset($parent)) {
 
 			$slug_abs = $entity -> getSlug();
 			
 			$entity -> setSlugAbsoluto($slug_abs);
 
-		} else {
-			
-			if ($todos_locale){
-				
-				
-				$locale_inicio = $entity->getLocale();
-				
-				/* 
-				 * se actualizan todos los locale de la entidad: todas las traudcciones
-				 * esto es necesario por ejemplo cuando ha cambiado el padre 
-				 * del que depende un contenido: esta comprobación se debe realizar en 
-				 * otro sitio
-				 */
-				$this->findAllLocales($entity);
-				
-				$this->findAllLocales($parent);
-				
-				$translations = $entity->getTranslations();
-				
-				// recorrido de todos los locale
-				foreach ($translations as $tr){
-					
-					$locale = $tr->getLocale();
-					
-					//echo "actualizando slug absoluto de locale: ".$locale;
-					// entidad en locale
-					$entity->setCurrentTranslation($locale);
-					
-					// entidad padre en locale
-					$parent->setCurrentTranslation($locale);
-				
-					$slug_abs_locale = $parent->getSlugAbsoluto() . $separador . $entity -> getSlug();
-					
-					$entity->setSlugAbsoluto($slug_abs_locale);
-					
-					//echo " slug abs actualizado a: ".$entity->getSlugAbsoluto();
+			return;
 
-				}
-				
-				// devolvemos la entidad a su locale original
-				$entity->setCurrentTranslation($locale_inicio);
-
-			} else {
-				
-				// se actualiza únicamente el locale actual de la entidad
-				
-				$locale = $entity->getLocale();
-
-				// TODO: esta condición se ha introducido para solventar un bug indirecto provocado al interactuar
-				// con otro bundle. no convence. toda entidad en este punto debería tener un 'locale'
-				if(!$locale){
-					return;
-				}
-				
-				$parent_tr = $this->getTranslationForLocale($parent, $locale);
-				
-				if (!isset($parent_tr)){
-					throw new \Exception(sprintf("El nodo de contenido al que pertence la entidad (id: %s, clase: %s) no tiene traducción 
-					para el idioma que está editando (%s). Id nodo padre: %s", $entity->getId(), get_class($entity), $locale, $parent->getId()));
-					
-				}
-				
-				$slug_abs = $parent_tr->getSlugAbsoluto() . $separador . $entity -> getSlug();
-
-				$entity -> setSlugAbsoluto($slug_abs);
-
-			}
 		}
 
+		if ($todos_locale) {
+			$this->actualizaSlugAbsolutoByParentTodosLocale($entity);
+		} else {
+
+			// se actualiza únicamente el locale actual de la entidad
+			$locale = $entity->getLocale();
+
+			// TODO: esta condición se ha introducido para solventar un bug indirecto provocado al interactuar
+			// con otro bundle. no convence. toda entidad en este punto debería tener un 'locale'
+			// depurar
+			if(!$locale){
+				return;
+			}
+				
+			$this->setEntitySlugAbsolutoLocale($entity, $parent, $locale);
+		}
+	}
+
+	/**
+     * se actualizan todos los locale de la entidad: todas las traudcciones
+	 * esto es necesario por ejemplo cuando ha cambiado el padre 
+	 * del que depende un contenido: esta comprobación se debe realizar en 
+	 * otro sitio
+	 */
+	private function actualizaSlugAbsolutoByParentTodosLocale($entity)
+	{
+		$parent = $entity->getParent();
 		
+		if (!isset($parent)) {
+			throw new \Exception("Se espera que la entidad tenga un padre");
+			
+		}
+
+		$locale_inicio = $entity->getLocale();
+
+		$this->findAllLocales($entity);
+
+		$this->findAllLocales($parent);
+
+		$translations = $entity->getTranslations();
+
+		foreach ($translations as $tr){
+
+			$locale = $tr->getLocale();
+
+			$entity->setCurrentTranslation($locale);
+
+			$this->actualizaSlugAbsolutoLocale($entity, $parent, $locale);
+		}
+
+		$entity->setCurrentTranslation($locale_inicio);
+	}
+
+	/**
+	 * Actualiza slug absoluto de una entidad en un locale
+	 * 
+	 * @param  [type] $entity [description]
+	 * @param  [type] $parent [description]
+	 * @param  [type] $locale [description]
+	 * @return [type]         [description]
+	 */
+	private function actualizaSlugAbsolutoLocale($entity, $parent, $locale)
+	{
+		$parent_tr = $this->getTranslationForLocale($parent, $locale);
+				
+		if (!isset($parent_tr)){
+			$this->throwPadreNoTieneTranslation($entity, $parent, $locale);
+		}
+				
+		$slug_abs = $parent_tr->getSlugAbsoluto() . $this->separador . $entity->getSlug();
+
+		$entity -> setSlugAbsoluto($slug_abs);
+	}
+
+	private function throwPadreNoTieneTranslation($entity, $parent, $locale)
+	{
+		throw new SlugException(sprintf("El nodo padre del contenido que se está guardando (id: %s, clase: %s) no tiene traducción 
+			para este idioma (%s). Id nodo padre: %s. Debes traducir antes el contenido padre.", $entity->getId(), get_class($entity), $locale, $parent->getId()));
 	}
 
 	/**
@@ -273,9 +268,7 @@ class JzcmsContentRepository extends TranslatableRepository
 		foreach ($children as $child) {
 
 			// actualización del slug del hijo
-			$separador = "/";
-			
-			$child -> setSlugAbsoluto($entity -> getSlugAbsoluto() . $separador . $child -> getSlug());
+			$child -> setSlugAbsoluto($entity -> getSlugAbsoluto() . $this->separador . $child -> getSlug());
 
 			/* 
 			 * actualización de slugs de los hijos del hijo.

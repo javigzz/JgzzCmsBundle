@@ -71,8 +71,6 @@ class SlugUpdaterEventSubscriber {
 			$padre_cambia = false;
 			
 		}
-		//var_dump($padre_cambia);
-		
 		
 		$er	-> actualizaSlugAbsoluto($object, $padre_cambia);
 
@@ -117,14 +115,7 @@ class SlugUpdaterEventSubscriber {
 			$slug = $object->getSlug();
 		
 			if(empty($slug)){
-
 				throw new \Exception("Se esperaba que la entidad tuviera un slug");
-				
-				// $slug_sintetico = $object->getKeyword()."_".strtoupper($object->getLocale());
-				
-				// $slug_sintetico .= "_".substr(md5($slug_sintetico), 0, 6);
-				
-				// $object -> setSlug($slug_sintetico);
 			}
 			
 			
