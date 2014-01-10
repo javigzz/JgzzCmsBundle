@@ -162,7 +162,7 @@ class JzcmsContentRepository extends TranslatableRepository
 				return;
 			}
 				
-			$this->setEntitySlugAbsolutoLocale($entity, $parent, $locale);
+			$this->actualizaSlugAbsolutoLocale($entity, $parent, $locale);
 		}
 	}
 
