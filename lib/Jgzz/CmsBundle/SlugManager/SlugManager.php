@@ -281,10 +281,11 @@ class SlugManager {
 			
 			foreach ($this->slugchain_abs as $slugabs){
 				$sum = $this->findEntitySummaryArrayBySlugAbs($slugabs);
-				if(empty($sum)){
-					throw new \Exception("No se encuentra el contendio asociado slug '$slugabs'", 1);
+				if(!empty($sum)){
+					array_push($sa, $sum);
+				} else {
+					// throw new \Exception("No se encuentra el contendio asociado slug '$slugabs'", 1);
 				}
-				array_push($sa, $sum);
 			}
 			
 			$this->current_active_entities_summary_array = $sa;
