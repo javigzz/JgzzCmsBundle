@@ -13,5 +13,5 @@ use Jgzz\DoctrineI18n\Entity\Repository\TranslationRepository;
  */
 class JzcmsContentI18nRepository extends TranslationRepository
 {
-	
+
 }

@@ -26,8 +26,7 @@ class JzcmsContentRepository extends TranslatableRepository
 	 * la relación de descendencia entre contenidos
 	 */
 	protected $base_content_entity_class = 'JgzzCmsBundle:JzcmsContent';
-	
-	
+
 	public function findOneBySlugAbsoluto($slug_absoluto)
 	{
 		$qb = $this -> createQueryBuilderToTrans();

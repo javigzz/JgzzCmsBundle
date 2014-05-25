@@ -4,13 +4,20 @@ namespace Jgzz\CmsBundle\Listener;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Jgzz\CmsBundle\Entity\JzcmsContent;
+use Jgzz\CmsBundle\Entity\JzcmsContentRepository;
 
 /**
  * Clase suscriber de eventos para manejar la actualización de los slugs
  * de entidades que utilizan el JzcmsContentRepository
  */ 
-class SlugUpdaterEventSubscriber {
-
+class SlugUpdaterEventSubscriber 
+{
+	/**
+	 * If true, slug_absoluto will be updated on update and persist
+	 * @var boolean
+	 */
+	public $autoUpdateSlugAbsoluto = true;
+	
 	/**
 	 * Maneja actualización del slug absoluto en base al nuevo slug y al 
 	 * slug del padre, si es que este ha cambiado en la edición del objeto.
@@ -21,9 +28,12 @@ class SlugUpdaterEventSubscriber {
 	 */
 	public function preUpdate(PreUpdateEventArgs $eventArgs)
     {
+    	if(!$this->autoUpdateSlugAbsoluto) {
+    		return;
+    	}
+
 		$entity = $eventArgs->getEntity();
 		
-	
 		if ( !is_a($entity, 'Jgzz\DoctrineI18n\Entity\Translatable') 
 			&& 
 			!is_a($entity, 'Jgzz\DoctrineI18n\Entity\Translation')){
@@ -41,39 +51,12 @@ class SlugUpdaterEventSubscriber {
 		
 		$er = $eventArgs->getEntityManager()->getRepository(get_class($object));
 		
-		/*
-		 * comprobamos que existe el método actualizaSlugAbsoluto en el repositorio, 
-		 * que no es específico de Translatable sindo de algunas 'subclases'...
-		 * 
-		 */
-		if(!(method_exists($er, 'actualizaSlugAbsoluto')))
-		{
+		if (!($er instanceof JzcmsContentRepository)) {
 			return;
 		}
-		
-		/*
-		 * ojo, parent tiene diferente significado para un objeto JzcmsContent
-		 * que para un objeto Translation:
-		 */
-		if ( is_a($er, 'Jgzz\CmsBundle\Entity\JzcmsContentRepository')) {
-			// comprobamos si el padre ha cambiado
-			$padre_cambia = $eventArgs->hasChangedField('parent');
-			
-		} else {
-			// XXX ojo, esto  no es necesario al haber homogeneizado object más arriba
-			
-			// en caso de que se esté tratando un objeto Translation,
-			// se entiende que el 'padre' no cambia a los efectos del 
-			// método actualizaSlug...
-			// TODO: esto puede provocar que se ejecute dos veces actualizaSlugA
-			// una por motivo del Translation y otra del Translatable
-			// SOLUCIONAR
-			$padre_cambia = false;
-			
-		}
-		
-		$er	-> actualizaSlugAbsoluto($object, $padre_cambia);
 
+		$padre_cambia = $eventArgs->hasChangedField('parent');
+		$er->actualizaSlugAbsoluto($object, $padre_cambia);
     }
 	
 	/**
@@ -81,73 +64,35 @@ class SlugUpdaterEventSubscriber {
 	 * se reciba la entidad Translatable como en el que se reciba 
 	 * la Tranlation (como en método preUpdate)
 	 */
-	public function prePersist(LifecycleEventArgs $args) {
+	public function prePersist(LifecycleEventArgs $args) 
+	{
+		if(!$this->autoUpdateSlugAbsoluto) {
+    		return;
+    	}
 
 		$entity = $args->getEntity();
-		
-		//$er = $args->getEntityManager()->getRepository(get_class($entity));
-		
+
 		/*
 		 * el objeto sobre el que se realizan las acciones debe ser 
 		 * el objeto principal, no la trauducción
 		 */
 		$object = is_a($entity, 'Jgzz\DoctrineI18n\Entity\Translation') ?
-			$entity -> getParent() :
+			$entity->getParent() :
 			$entity;
 		
 		$er = $args->getEntityManager()->getRepository(get_class($object));
 		
-		/*
-		 * comprobamos que existe el método actualizaSlugAbsoluto en el repositorio, 
-		 * que no es específico de Translatable sindo de algunas 'subclases'...
-		 */
-		if(!(method_exists($er, 'actualizaSlugAbsoluto')))
-		{
+		if (!($er instanceof JzcmsContentRepository)) {
 			return;
 		}
 		
-		
-		/*
-		 * Si el repositorio tiene el método actualizaSlugAbs...
-		 */
-		if ( is_a($er, 'Jgzz\CmsBundle\Entity\JzcmsContentRepository')) {
-			
-			$slug = $object->getSlug();
-		
-			if(empty($slug)){
-				throw new \Exception("Se esperaba que la entidad tuviera un slug");
-			}
-			
-			
-        	$er	-> actualizaSlugAbsoluto($object, false);
-			
-        }
-	}
+		$slug = $object->getSlug();
 	
-	/*
-	 * TODO: traer el evento de transmisión de slugs hacia abajo
-	 * de SlugableI18nAdmin
-	 * 
-	public function postUpdate(LifecycleEventArgs $args) {
-		
-		$entity = $args->getEntity();
-		
-		$er = $eventArgs->getEntityManager()->getRepository(get_class($entity));
-		
-		if ( is_a($er, 'Jgzz\CmsBundle\Entity\JzcmsContentRepository')) {
+		if(empty($slug)){
+			throw new \Exception("Se esperaba que la entidad tuviera un slug");
+		}
 			
-			// comprobamos si el padre ha cambiado
-			//$padre_cambia = $eventArgs->hasChangedField('parent');
-			
-        	$er->transmiteSlugAHijas($entity, array());
-			
-			$er->flush();
-			
-        }
-		
-		
-		
+       	$er	-> actualizaSlugAbsoluto($object, false);
 	}
-	*/
 }
     	
